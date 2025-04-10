@@ -1,69 +1,135 @@
-<hr style="border-width:2px;border-color:darkred">
+# DA Technical Test: ML Engineering
+
 <div align="center">
-
-<img src="./da_logo_transparent_small.gif" height=300>
-
-<h1>DA Technical Test: ML Engineering</h1>
-<br>
-<br>
-<hr style="border-width:2px;border-color:darkred">
+  <img src="./da_logo_transparent_small.gif" height="150">
 </div>
 
 ## Overview
 
-**Target Duration : 2 hours**
+This project transforms a machine learning prototype (originally a Jupyter Notebook) into a modular, maintainable, and production-ready ML software product. It includes data ingestion, preprocessing, hyperparameter tuning, model training, evaluation, and artifact management. The project also demonstrates best practices in software engineering, such as code modularity, reproducibility, testing, and configuration management.
 
-This technical test simulates a real-world scenario where a Data Scientist will deliver you prototype code contained in the "notebooks/modeling_starter.ipynb" notebook and your task is to transform it into a modular, maintainable, and production-ready machine learning software product. In doing so, you will need to apply software engineering best practices detailed in the **Guidelines** section and ensure the final project is fully reproducible.
+## Project Structure
 
-You may use ML Engineering frameworks such as Kedro, ZenML, Metaflow or start from scratch **as long as your choices are justified**.
+```plaintext
+project/
+├── configs/
+│   └── config.yaml         # External configuration parameters (data URLs, preprocessing settings, training params, etc.)
+├── data/                   # Raw and processed data files
+├── models/                 # Saved model artifacts (generated after training)
+├── notebooks/              # Original notebook for reference (modeling_starter.ipynb)
+├── src/
+│   ├── __init__.py
+│   ├── config.py           # Module to load configuration from config files
+│   ├── data_loader.py      # Handles data downloading and loading
+│   ├── preprocessing.py    # Data preprocessing functions (target creation, encoding, etc.)
+│   ├── model.py            # Model training, hyperparameter tuning, and evaluation
+│   └── utils.py            # Utility functions (e.g., saving and loading models)
+├── tests/
+│   ├── __init__.py
+│   └── test_pipeline.py    # Unit and integration tests for the pipeline
+├── Dockerfile              # Containerization for reproducibility
+├── main.py                 # Main script tying together the entire ML pipeline
+├── requirements.txt        # Python dependencies required for the project
+├── README_DOCS.md          # This documentation file
+└── README.md               # Original readme file
 
-You may incorporate whichever tool you like, **as long as your choices are justified**.
+```
 
-You may rewrite the code in whichever way you like, **as long as your choices are justified**.
+## Requirements
 
-## Guidelines 
+- Python 3.10 (or a compatible version)
+- The following Python packages (see requirements.txt for full details):
+  - pandas
+  - scikit-learn
+  - lightgbm
+  - optuna
+  - requests
+  - rdata
+  - pyyaml
+  - joblib
+  - pytest
 
-1. **Project Structure & Organization**
-   - Organize the refactored code into a well-defined project layout. Consider creating directories for:
-     - Data (raw data, model input, training/test data, metrics and artifacts)
-     - Source code (e.g., modules for data ingestion, preprocessing, model training, evaluation, and deployment)
-     - Tests (unit and integration)
-     - Configuration files and scripts
-     - Documentation and reporting
-   - Use meaningful names for files and directories to clearly describe their content and purpose.
+## Installation
 
-2. **Code Refactoring & Quality**
-   - Decompose the notebook into modular parts where each module (or function) has a single objective.
-   - Adhere to best coding practices and style guides. Implement tools such as `Ruff` to enforce code quality standards. 
+1. Clone the repository:
+   ```bash
+   git clone <repository_url>
+   cd project
+   ```
 
-3. **Reproducibility**
-   - Provide a way to lock down all development and regular dependencies.
-   - Document the steps required to set up the development environment, or consider including a Dockerfile for containerized deployment.
-   - Ensure that random seeds and any non-deterministic behavior are controlled so that experiments are reproducible.
+2. Set up a virtual environment (optional but recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate    # On Windows use: venv\Scripts\activate
+   ```
 
-4. **Testing**
-   - Write unit tests for functions you consider most critical to validate their behavior, and achieve at least 50% coverage.
-   - Include an integration test to confirm that the modules work together as expected.
-   - Utilize a suitable testing framework (e.g., pytest).
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-5. **Configuration & Hyperparameter Management**
-   - Externalize configurations from the code. Use configuration files (e.g., YAML, JSON) or environment variables for parameters such as file paths, hyperparameters, and model settings.
-   - Allow for easy parameter tweaking without modifying the core codebase.
+## Configuration
 
-6. **Documentation**
-   - Provide a reasonably detailed documentation for each component, including:
-     - An overview of the project’s architecture.
-     - Setup and installation instructions.
-     - Usage examples and command-line options.
-   - Include a well-defined README that guides new users or developers through the project structure and functionality.
+All configurable parameters are stored in the `configs/config.yaml` file. This includes:
 
-## Deliverables
-- A refactored, modular project that replaces the original notebook.
-- A comprehensive README detailing project setup, structure, usage, and testing instructions.
-- Appropriate scripts or configuration files (.lock files, Dockerfile, etc.) to guarantee reproducibility.
+- Data Settings: URL for the dataset, output directory, and file name.
+- Preprocessing Settings: Target column, columns to drop, and list of categorical columns for one-hot encoding.
+- Training Settings: Test size, random state, and the number of trials for hyperparameter tuning using Optuna.
 
-Following these guidelines will not only demonstrate your technical aptitude in refactoring and software engineering best practices but also ensure that the resulting ML product is robust, maintainable, and reproducible, which is what we want to see.
+You can adjust these settings without modifying the core code.
 
-If you have any questions you may email Pierre Adeikalam at the following address : **pierre.adeikalam[at]axa-direct.com**
+## Running the Project
 
-Good luck!
+The main entry point for the project is `main.py`, which executes the following steps:
+1. Loads configuration from `configs/config.yaml`
+2. Downloads and converts data (using `src/data_loader.py`)
+3. Loads and preprocesses the data (using `src/preprocessing.py`)
+4. Splits the data into training and test sets
+5. Tunes hyperparameters and trains the model (using `src/model.py`)
+6. Evaluates the model and saves it (using `src/utils.py`)
+
+To run the full pipeline, simply execute:
+   ```bash
+   python main.py
+   ```
+
+The output will display the best hyperparameters found during tuning, evaluation metrics (accuracy, precision, recall, F1 score), and the location where the trained model is saved.
+
+## Running Tests
+
+Unit and integration tests are provided to ensure that the pipeline components function as expected. Tests are written using pytest.
+
+To run the tests:
+```bash
+   pytest --maxfail=1 --disable-warnings -q
+```
+
+Tests are located in the `tests/` directory and cover data loading, preprocessing, and basic pipeline functionality.
+
+## Docker Deployment
+
+A Dockerfile is provided to encapsulate the environment and guarantee reproducibility.
+
+1. Build the Docker image:
+```bash
+   docker build -t ml-engineering-app
+```
+
+2. Run the Docker container:
+```bash
+   docker run --rm ml-engineering-app
+```
+
+This container will run the main script and produce the same output as running `main.py` locally.
+
+## Extending the Project
+
+- Adding New Preprocessing Steps:
+  Modify or extend the functions in `src/preprocessing.py` as needed. Update tests in `tests/test_pipeline.py` to cover new functionalities.
+
+- Model Improvements:
+  If you wish to experiment with different models or hyperparameter spaces, modify the functions in `src/model.py` and document your changes in the configuration file.
+
+- Logging and Monitoring:
+  Consider integrating logging mechanisms to record pipeline progress and model performance over time.
+
