@@ -1,0 +1,14 @@
+data:
+  url: "https://github.com/dutangc/CASdatasets/raw/refs/heads/master/data/pg15training.rda"
+  output_directory: "./data/"
+  file_name: "pg15training.csv"
+
+preprocessing:
+  target_column: "Numtppd"
+  drop_columns: ["Numtppd", "Numtpbi", "Indtppd", "Indtpbi"]
+  categorical_columns: ['CalYear', 'Gender', 'Type', 'Category', 'Occupation', 'SubGroup2', 'Group2', 'Group1']
+
+training:
+  test_size: 0.2
+  random_state: 42
+  optuna_trials: 20

@@ -1,0 +1,9 @@
+pandas
+scikit-learn
+lightgbm
+optuna
+requests
+rdata
+pyyaml
+joblib
+pytest
